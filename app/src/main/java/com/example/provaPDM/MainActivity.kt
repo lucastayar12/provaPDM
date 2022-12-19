@@ -1,9 +1,8 @@
-package com.example.mylistofsomething
+package com.example.provaPDM
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -12,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -33,13 +33,31 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@Composable
+fun ListVehicles(items : List<Vehicle>){
+    Column() {
+        items.forEach{ item ->
+            Column() {
+                Text(text = item.model)
+                Text(text = item.type.type)
+                Text(text = item.price.toString())
+                Text(text = item.status)
+            }
+
+        }
+
+
+    }
+}
+
+
 // Creating a composable
 // function to display Top Bar
 @Composable
 fun MainContent() {
     Scaffold(
         topBar = { TopAppBar(title = { Text("Register New Car", color = Color.White) }, backgroundColor = Color(0xFF0F5F9D)) },
-        content = { MyContent() }
+        content = { MyContent()}
     )
 }
 
@@ -59,8 +77,7 @@ fun MyContent(){
     var price by remember { mutableStateOf("")}
 
     // Create a list of cities
-    val mCities = listOf("Delhi", "Mumbai", "Chennai", "Kolkata", "Hyderabad", "Bengaluru", "Pune")
-
+    val mVehicleTypes = VehicleType.getList()
     // Create a string value to store the selected city
 
 
@@ -82,7 +99,7 @@ fun MyContent(){
             modifier = Modifier.fillMaxWidth()
         )
 
-        Box(){
+        Box{
             // Create an Outlined Text Field
             // with icon and not expanded
             OutlinedTextField(
@@ -111,7 +128,7 @@ fun MyContent(){
                 modifier = Modifier
                     .width(with(LocalDensity.current){mTextFieldSize.width.toDp()})
             ) {
-                mCities.forEach { label ->
+                mVehicleTypes.forEach { label ->
                     DropdownMenuItem(onClick = {
                         type = label
                         mExpanded = false
@@ -122,29 +139,41 @@ fun MyContent(){
             }
         }
 
-        OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = price,
-            onValueChange = {
-                price = if (it.startsWith("0")) {
-                    ""
-                } else {
-                    it
-                }
-            },
-            label = { Text("Price") },
-            visualTransformation = CurrencyAmountInputVisualTransformation(
-                fixedCursorAtTheEnd = true
-            ),
-            keyboardOptions = KeyboardOptions( keyboardType = KeyboardType.NumberPassword)
-        )
-        
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = price,
+                onValueChange = {
+                    price = if (it.startsWith("0")) {
+                        ""
+                    } else {
+                        it
+                    }
+                },
+                label = { Text("Price") },
+                visualTransformation = CurrencyAmountInputVisualTransformation(
+                    fixedCursorAtTheEnd = true
+                ),
+                keyboardOptions = KeyboardOptions( keyboardType = KeyboardType.NumberPassword)
+            )
+
         Button(
-            onClick = { /*TODO*/ },
+            onClick = {
+                val vehicle = Vehicle(model, price.toFloat(), VehicleType.valueOf(type))
+                vehicle.setStatus()
+                DAOVehicle.saveVehicle(vehicle)
+                      },
             colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF0F5F9D)),
-            ) {
-            Text(text = "Register")
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
+        {
+            Text(text = "Submit", color = Color(0xFFFFFFFF))
         }
+
+        if(DAOVehicle.getVehicles() != null)
+            ListVehicles(items = DAOVehicle.getVehicles())
+
+
+
     }
 }
 

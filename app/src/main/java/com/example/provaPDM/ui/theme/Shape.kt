@@ -1,4 +1,4 @@
-package com.example.mylistofsomething.ui.theme
+package com.example.provaPDM.ui.theme
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Shapes

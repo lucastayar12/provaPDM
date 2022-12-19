@@ -1,4 +1,4 @@
-package com.example.mylistofsomething
+package com.example.provaPDM
 
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.OffsetMapping

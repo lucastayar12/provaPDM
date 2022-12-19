@@ -1,4 +1,4 @@
-package com.example.mylistofsomething.ui.theme
+package com.example.provaPDM.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
